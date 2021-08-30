@@ -5,7 +5,17 @@ from common.constants import LoginConstants
 from models.auth import AuthData
 
 
+def open_auth_page(app):
+    app.open_auth_page()
+
+    login_form = app.login.find_login_form()
+
+    if not login_form:
+        app.login.click_element(app.login.confirm_exit())
+
+
 class TestAuth:
+
     def test_auth_valid_data(self, app):
         """
         Steps
@@ -13,7 +23,7 @@ class TestAuth:
         2. Auth with valid data
         3. Check auth result
         """
-        app.open_auth_page()
+        open_auth_page(app)
         data = AuthData(login="admin", password="Vjcrdf2!")
         app.login.auth(data)
         assert app.login.is_auth(), "We are not auth"
@@ -25,7 +35,7 @@ class TestAuth:
         2. Auth with invalid data
         3. Check auth result
         """
-        app.open_auth_page()
+        open_auth_page(app)
         data = AuthData.random()
         app.login.auth(data)
         assert LoginConstants.AUTH_ERROR == app.login.auth_login_error(), "We are auth!"
@@ -38,7 +48,7 @@ class TestAuth:
         2. Auth with empty data
         3. Check auth result
         """
-        app.open_auth_page()
+        open_auth_page(app)
         data = AuthData.random()
         setattr(data, field, None)
         app.login.auth(data)
@@ -51,7 +61,7 @@ class TestAuth:
         2. Auth with empty data
         3. Check auth result
         """
-        app.open_auth_page()
+        open_auth_page(app)
         data = AuthData.random()
         setattr(data, "login", None)
         setattr(data, "password", None)
@@ -66,13 +76,7 @@ class TestAuth:
         3. Click on login as a guest button
         4. Check we are at the main page
         """
-        app.open_auth_page()
-
-        login_form = app.login.find_login_form()
-
-        if not login_form:
-            app.login.click_element(app.login.confirm_exit())
-
+        open_auth_page(app)
         app.login.click_element(app.login.login_as_guest_button())
 
         login_button = app.login.find_login_button()
